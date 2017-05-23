@@ -3,6 +3,7 @@ import mpl_toolkits.mplot3d as p3
 import numpy as np
 import time
 import random
+import math
 
 from functools import partial
 from numpy.linalg import norm
@@ -46,8 +47,7 @@ class Perceptron:
         (элементы вектора - boolean или целые числа (0 или 1))
         """
 
-        ## Этот метод необходимо реализовать
-        pass
+        return input_matrix.dot(self.w) + self.b > 0
 
     def train_on_single_example(self, example, y):
         """
@@ -58,8 +58,11 @@ class Perceptron:
         (на её основании мы потом построим интересный график)
         """
 
-        ## Этот метод необходимо реализовать
-        pass
+        y_ = float(self.vectorized_forward_pass(example.T))
+        dw = y - y_
+        self.b += dw
+        self.w += dw
+        return math.fabs(dw)
 
 random.seed(42)  # начальное состояние генератора случайных чисел, чтобы можно было воспроизводить результаты.
 
