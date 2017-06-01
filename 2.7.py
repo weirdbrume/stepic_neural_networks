@@ -189,6 +189,39 @@ class Neuron:
         и обновляет веса нейрона. Если ошибка изменилась меньше, чем на eps - возвращаем 1,
         иначе возвращаем 0.
         """
-        # Этот метод необходимо реализовать
 
-        pass
+        # считаем y^
+        z = self.summatory(X)
+        y_ = self.activation(z)
+
+        # считаем градиент
+        dy_dy_ = (y_ - y) / len(y)
+        dy__dz = self.activation_function_derivative(z)
+        dz_dw = X
+        grad = ((dy_dy_ * dy__dz).T.dot(dz_dw)).T
+
+        # считаем целевую ф-ию до обновления весов
+        J_before_weights_update = 0.5 * np.mean((self.vectorized_forward_pass(X) - y) ** 2)
+
+        # обновляем веса нейрона
+        self.w = self.w - learning_rate * grad
+
+        # считаем целевую ф-ию после обновления весов
+        J_after_weights_update = 0.5 * np.mean((self.vectorized_forward_pass(X) - y) ** 2)
+
+        # находим разность значений целевой ф-ии
+        dJ = J_before_weights_update - J_after_weights_update
+
+        return int(dJ < eps)
+
+np.random.seed(42)
+n = 10
+m = 5
+
+X = 20 * np.random.sample((n, m)) - 10
+y = (np.random.random(n) < 0.5).astype(np.int)[:, np.newaxis]
+w = 2 * np.random.random((m, 1)) - 1
+
+neuron = Neuron(w)
+neuron.update_mini_batch(X, y, 0.1, 1e-5)
+print(neuron.w)
