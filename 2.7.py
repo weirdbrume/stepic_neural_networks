@@ -131,11 +131,11 @@ class Perceptron:
         (на её основании мы потом построим интересный график)
         """
 
-        y_ = float(self.vectorized_forward_pass(example.T)[0][0])
+        y_ = self.vectorized_forward_pass(example.T)[0][0]
         dw = y - y_
         self.b += dw
         self.w += dw * example
-        return y == y_
+        return dw
 
     def train_until_convergence(self, input_matrix, y, max_steps=1e8):
         """
@@ -296,7 +296,7 @@ class Neuron:
 
         return num_grad
 
-    def compute_grad_numerically_2(self, X, y, J=J_quadratic, eps=10e-2):
+    def compute_grad_numerically_2(neuron, X, y, J=J_quadratic, eps=10e-2):
         """
         Численная производная целевой функции.
         neuron - объект класса Neuron с вертикальным вектором весов w,
@@ -306,35 +306,35 @@ class Neuron:
         eps - размер $\delta w$ (малого изменения весов).
         """
 
-        w_0 = self.w
+        w_0 = neuron.w
         num_grad = np.zeros(w_0.shape)
 
         for i in range(len(w_0)):
-            old_wi = self.w[i].copy()
+            old_wi = neuron.w[i].copy()
             # Меняем вес
-            self.w[i] += eps
+            neuron.w[i] += eps
 
             # Считаем новое значение целевой функции f(x+dx)
-            pos_cost = J(self, X, y)
+            pos_cost = J(neuron, X, y)
 
             # Возвращаем вес обратно. Лучше так, чем -= eps, чтобы не накапливать ошибки округления
-            self.w[i] = old_wi
+            neuron.w[i] = old_wi
 
             # снова меняем вес
-            self.w[i] -= eps
+            neuron.w[i] -= eps
 
             # Считаем новое значение целевой функции f(x-dx)
-            neg_cost = J(self, X, y)
+            neg_cost = J(neuron, X, y)
 
             # вычисляем приближенное значение градиента f(x+dx)-f(x-dx)/2dx
             num_grad[i] = (pos_cost - neg_cost) / (2 * eps)
 
             # Возвращаем вес обратно
-            self.w[i] = old_wi
+            neuron.w[i] = old_wi
 
 
         # проверим, что не испортили нейрону веса своими манипуляциями
-        assert np.allclose(self.w, w_0), "МЫ ИСПОРТИЛИ НЕЙРОНУ ВЕСА"
+        assert np.allclose(neuron.w, w_0), "МЫ ИСПОРТИЛИ НЕЙРОНУ ВЕСА"
 
         return num_grad
 
