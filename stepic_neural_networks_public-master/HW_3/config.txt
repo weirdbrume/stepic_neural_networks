@@ -1,0 +1,1 @@
+python run_car.py -s 1000 --seed 23 -f network_config_agent_0_layers_10_20_20_1.txt - запуск с файлом весов (дообучение)
